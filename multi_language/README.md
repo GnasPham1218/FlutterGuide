@@ -45,12 +45,13 @@ mkdir lib/l10n
 
 ---
 
-## 3️⃣ Add ARB Files
+## 3️⃣ Add ARB Files and l10n.dart
 
 Create the following files in `lib/l10n/`:
 
 - `app_en.arb` (English)
 - `app_vi.arb` (Vietnamese)
+- `l10n.dart`
 
 ### `app_en.arb`
 
@@ -71,6 +72,19 @@ Create the following files in `lib/l10n/`:
   "language": "Việt Nam",
   "hello": "Xin chào",
   "changeLanguage": "Đổi ngôn ngữ"
+}
+```
+
+### `l10n.dart`
+
+```dart
+import 'package:flutter/material.dart';
+
+class L10n {
+  static final all = [
+    const Locale('en', ''), // English
+    const Locale('vi', ''), // Vietnamese
+  ];
 }
 ```
 
@@ -105,10 +119,17 @@ In `main.dart`, import and set up localization:
 ```dart
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'l10n/l10n.dart';
 
 MaterialApp(
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
-  supportedLocales: AppLocalizations.supportedLocales,
+  locale: _locale, // optional for runtime change
+  supportedLocales: L10n.all,
+  localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
   home: MyHomePage(),
 )
 ```
@@ -117,10 +138,29 @@ MaterialApp(
 
 ## 7️⃣ Use Localized Strings
 
+Import if you want in other pages
+
+```dart
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+```
+
 Use localized text in your widgets:
 
 ```dart
 Text(AppLocalizations.of(context)!.hello)
+```
+
+---
+
+## 8️⃣. Change Language at Runtime (Optional)
+
+```dart
+Implement setLocale() in MyApp and call it like this in your HomePage:
+final currentLocale = Localizations.localeOf(context);
+final newLocale = currentLocale.languageCode == 'vi'
+    ? const Locale('en')
+    : const Locale('vi');
+MyApp.setLocale(context, newLocale);
 ```
 
 ---
